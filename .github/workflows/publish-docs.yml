@@ -32,6 +32,9 @@ jobs:
           mkdir -p workspace/artifacts
           mkdir -p workspace/docs
 
+      - name: Copy DocFX configuration
+        run: cp docfx.json workspace/docfx.json
+
       - name: Retrieve contributor documentation
         env:
           GH_TOKEN: ${{ secrets.GH_ACTIONS_PAT }}
@@ -123,9 +126,16 @@ jobs:
           find workspace -type f | sort
 
       - name: Generate API metadata
+        working-directory: workspace
         run: docfx metadata docfx.json
 
+      - name: Show workspace after metadata generation
+        run: |
+          echo "===== WORKSPACE ====="
+          find workspace -type f | sort
+
       - name: Build documentation site
+        working-directory: workspace
         run: docfx build docfx.json
 
       - name: Show generated site
