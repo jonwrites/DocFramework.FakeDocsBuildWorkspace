@@ -23,9 +23,11 @@ jobs:
 
           curl -L \
             -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GH_ACTIONS_PAT }}" \
             "$ARTIFACT_URL" \
             -o storage-artifact.zip
 
       - name: Inspect downloaded artifact
         run: |
+          file storage-artifact.zip
           unzip -l storage-artifact.zip
