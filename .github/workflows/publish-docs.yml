@@ -10,8 +10,9 @@ jobs:
     steps:
       - name: Find Storage documentation artifact
         run: |
-          curl -L \
+          curl -fL \
             -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GH_ACTIONS_PAT }}" \
             "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer1/actions/artifacts?name=documentation-input" \
             -o artifacts.json
 
