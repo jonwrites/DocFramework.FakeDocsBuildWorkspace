@@ -15,6 +15,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install DocFX
+        run: dotnet tool install -g docfx
+
       - name: Install yq
         run: |
           sudo snap install yq
@@ -71,6 +79,9 @@ jobs:
 
             unzip -q contributor.zip -d contributor
 
+            echo "===== CONTRIBUTOR ARTIFACT ====="
+            find contributor -type f | sort
+
             echo "Copying API artifacts..."
 
             cp contributor/artifacts/* \
@@ -110,3 +121,14 @@ jobs:
         run: |
           echo "===== AGGREGATED WORKSPACE ====="
           find workspace -type f | sort
+
+      - name: Generate API metadata
+        run: docfx metadata docfx.json
+
+      - name: Build documentation site
+        run: docfx build docfx.json
+
+      - name: Show generated site
+        run: |
+          echo "===== GENERATED SITE ====="
+          find workspace/_site -type f | sort

@@ -1,0 +1,31 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "workspace/artifacts/*.dll"
+          ]
+        }
+      ],
+      "dest": "workspace/api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "workspace/docs/**"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "workspace/docs/**"
+        ]
+      }
+    ],
+    "output": "workspace/_site"
+  }
+}
