@@ -73,12 +73,12 @@ jobs:
 
             echo "Copying API artifacts..."
 
-            cp contributor/documentation-input/artifacts/* \
+            cp contributor/artifacts/* \
                workspace/artifacts/
 
             echo "Copying human documentation..."
 
-            cp -r contributor/documentation-input/docs/* \
+            cp -r contributor/docs/* \
                "workspace/docs/$docs_path/"
 
             echo "Finished $name"
