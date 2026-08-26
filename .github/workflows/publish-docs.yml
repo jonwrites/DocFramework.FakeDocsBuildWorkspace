@@ -8,20 +8,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test access to Storage artifact
+      - name: Find Storage documentation artifact
         run: |
           curl -L \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer1/actions/artifacts?name=documentation-input" \
-            -o storage-artifacts.json
+            -o artifacts.json
 
-          cat storage-artifacts.json
+          cat artifacts.json
 
-      - name: Test access to Messaging artifact
+      - name: Download Storage documentation artifact
         run: |
+          ARTIFACT_URL=$(python -c "import json; print(json.load(open('artifacts.json'))['artifacts'][0]['archive_download_url'])")
+
           curl -L \
             -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer2/actions/artifacts?name=documentation-input" \
-            -o messaging-artifacts.json
+            "$ARTIFACT_URL" \
+            -o storage-artifact.zip
 
-          cat messaging-artifacts.json
+      - name: Inspect downloaded artifact
+        run: |
+          unzip -l storage-artifact.zip
