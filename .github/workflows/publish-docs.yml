@@ -1,34 +1,112 @@
-name: Test contributor artifact access
+name: Aggregate Documentation
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  test-access:
+  aggregate:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Find Storage documentation artifact
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yq
         run: |
-          curl -fL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GH_ACTIONS_PAT }}" \
-            "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer1/actions/artifacts?name=documentation-input" \
-            -o artifacts.json
+          sudo snap install yq
 
-          cat artifacts.json
-
-      - name: Download Storage documentation artifact
+      - name: Create workspace
         run: |
-          ARTIFACT_URL=$(python -c "import json; print(json.load(open('artifacts.json'))['artifacts'][0]['archive_download_url'])")
+          mkdir -p workspace/artifacts
+          mkdir -p workspace/docs
 
-          curl -L \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GH_ACTIONS_PAT }}" \
-            "$ARTIFACT_URL" \
-            -o storage-artifact.zip
-
-      - name: Inspect downloaded artifact
+      - name: Retrieve contributor documentation
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACTIONS_PAT }}
         run: |
-          file storage-artifact.zip
-          unzip -l storage-artifact.zip
+          contributors=$(yq -r '.contributors[] | [.name, .repository, .docs-path] | @tsv' uop.yml)
+
+          while IFS=$'\t' read -r name repository docs_path
+          do
+            echo "=========================================="
+            echo "Processing: $name"
+            echo "Repository: $repository"
+            echo "Docs path: $docs_path"
+            echo "=========================================="
+
+            mkdir -p "workspace/docs/$docs_path"
+
+            echo "Finding documentation artifact..."
+
+            curl -fL \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              "https://api.github.com/repos/$repository/actions/artifacts?name=documentation-input" \
+              -o artifact-list.json
+
+            artifact_url=$(python -c "
+          import json
+          data = json.load(open('artifact-list.json'))
+          artifacts = [a for a in data['artifacts'] if not a['expired']]
+          artifacts.sort(key=lambda a: a['created_at'], reverse=True)
+          print(artifacts[0]['archive_download_url'])
+          ")
+
+            echo "Downloading artifact..."
+
+            curl -fL \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              "$artifact_url" \
+              -o contributor.zip
+
+            echo "Unpacking artifact..."
+
+            rm -rf contributor
+            mkdir contributor
+
+            unzip -q contributor.zip -d contributor
+
+            echo "Copying API artifacts..."
+
+            cp contributor/documentation-input/artifacts/* \
+               workspace/artifacts/
+
+            echo "Copying human documentation..."
+
+            cp -r contributor/documentation-input/docs/* \
+               "workspace/docs/$docs_path/"
+
+            echo "Finished $name"
+
+          done <<< "$contributors"
+
+      - name: Create UOP landing page
+        run: |
+          cat > workspace/docs/index.md <<'EOF'
+          # JLib Services
+
+          Documentation for the JLib Services documentation unit.
+          EOF
+
+      - name: Create UOP table of contents
+        run: |
+          cat > workspace/docs/toc.yml <<'EOF'
+          - name: JLib Services
+            href: index.md
+
+          - name: Storage
+            href: storage/index.md
+
+          - name: Messaging
+            href: messaging/index.md
+          EOF
+
+      - name: Show aggregated workspace
+        run: |
+          echo "===== AGGREGATED WORKSPACE ====="
+          find workspace -type f | sort
