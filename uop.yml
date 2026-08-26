@@ -1,0 +1,10 @@
+name: JLib Services
+
+contributors:
+  - name: JLib.Storage
+    repository: jonwrites/DocFramework.FakeConsumer1
+    docs-path: storage
+
+  - name: JLib.Messaging
+    repository: jonwrites/DocFramework.FakeConsumer2
+    docs-path: messaging

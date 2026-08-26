@@ -1,0 +1,27 @@
+name: Test contributor artifact access
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-access:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test access to Storage artifact
+        run: |
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer1/actions/artifacts?name=documentation-input" \
+            -o storage-artifacts.json
+
+          cat storage-artifacts.json
+
+      - name: Test access to Messaging artifact
+        run: |
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/jonwrites/DocFramework.FakeConsumer2/actions/artifacts?name=documentation-input" \
+            -o messaging-artifacts.json
+
+          cat messaging-artifacts.json
