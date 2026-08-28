@@ -126,8 +126,8 @@ jobs:
           cat > workspace/docs/index.md <<'EOF'
           # Document sets
 
-          - [Storage](docs/storage/index.md)
-          - [Messaging](docs/messaging/index.md)
+          - [Storage](storage/index.md)
+          - [Messaging](messaging/index.md)
           EOF
 
       - name: Create human docs table of contents
@@ -137,10 +137,10 @@ jobs:
             href: index.md
 
           - name: Storage
-            href: docs/storage/index.md
+            href: storage/index.md
 
           - name: Messaging
-            href: docs/messaging/index.md
+            href: messaging/index.md
 
           - name: API
             href: api/
