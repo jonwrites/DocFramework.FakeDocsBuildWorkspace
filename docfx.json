@@ -17,7 +17,12 @@
       {
         "files": [
           "docs/**",
-          "api/**"
+          "api/**",
+          "**/*.md",
+          "toc.yml"
+        ],
+        "exclude": [
+          "**/artifacts/**"
         ]
       }
     ],
