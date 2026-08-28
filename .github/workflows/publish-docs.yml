@@ -105,23 +105,45 @@ jobs:
 
       - name: Create UOP landing page
         run: |
-          cat > workspace/docs/index.md <<'EOF'
-          # JLib Services
+          cat > workspace/index.md <<'EOF'
+          # JLib Services version ${{ env.DOC_VERSION }}
 
           Documentation for the JLib Services documentation unit.
           EOF
 
       - name: Create UOP table of contents
         run: |
+          cat > workspace/toc.yml <<'EOF'
+          - name: JLib Services Docs
+            href: docs/index.md
+
+          - name: API
+            href: api/
+          EOF
+
+      - name: Create human docs landing page
+        run: |
+          cat > workspace/docs/index.md <<'EOF'
+          # Document sets
+
+          - [Storage](docs/storage/index.md)
+          - [Messaging](docs/messaging/index.md)
+          EOF
+
+      - name: Create human docs table of contents
+        run: |
           cat > workspace/docs/toc.yml <<'EOF'
           - name: JLib Services
             href: index.md
 
           - name: Storage
-            href: storage/index.md
+            href: docs/storage/index.md
 
           - name: Messaging
-            href: messaging/index.md
+            href: docs/messaging/index.md
+
+          - name: API
+            href: api/
           EOF
 
       - name: Show aggregated workspace
