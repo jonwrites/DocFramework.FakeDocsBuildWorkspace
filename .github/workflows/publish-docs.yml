@@ -184,7 +184,7 @@ jobs:
       - name: Inspect xref map
         run: |
           echo "===== TOOLS XREFMAP ====="
-          curl -L "YOUR_XREFMAP_URL" -o tools-xrefmap.yml
+          curl -L "https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.json" -o tools-xrefmap.yml
           head -100 tools-xrefmap.yml
 
           echo
