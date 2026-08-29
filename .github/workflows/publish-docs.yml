@@ -193,7 +193,7 @@ jobs:
 
       - name: Build documentation site
         working-directory: workspace
-        run: docfx build docfx.json -- xref https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.yml
+        run: docfx build docfx.json --xref https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.yml
 
       - name: Inspect generated links
         run: |

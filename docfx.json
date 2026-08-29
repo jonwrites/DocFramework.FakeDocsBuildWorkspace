@@ -5,8 +5,7 @@
       "src": [
         {
           "files": [
-            "artifacts/*.dll",
-            "artifacts/*.xml"
+            "artifacts/*.dll"
           ]
         }
       ],
