@@ -143,7 +143,7 @@ jobs:
             href: messaging/index.md
 
           - name: API
-            href: api/
+            href: ../api/
           EOF
 
       - name: Show aggregated workspace
@@ -162,7 +162,7 @@ jobs:
 
       - name: Build documentation site
         working-directory: workspace
-        run: docfx build docfx.json
+        run: docfx build docfx.json -- xref https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.json
 
       - name: Show generated site
         run: |
