@@ -146,10 +146,18 @@ jobs:
             href: ../api/
           EOF
 
-      - name: Show aggregated workspace
+      - name: Inspect documentation workspace
         run: |
-          echo "===== AGGREGATED WORKSPACE ====="
+          echo "===== WORKSPACE ====="
           find workspace -type f | sort
+
+          echo
+          echo "===== MANIFESTS ====="
+          find workspace -name "manifest.yml" -print -exec cat {} \;
+
+          echo
+          echo "===== DOCFX CONFIG ====="
+          cat workspace/docfx.json
 
       - name: Generate API metadata
         working-directory: workspace
@@ -160,9 +168,37 @@ jobs:
           echo "===== WORKSPACE ====="
           find workspace -type f | sort
 
+      - name: Inspect generated API metadata
+        run: |
+          echo "===== GENERATED API ====="
+          find workspace/api -type f | sort
+
+          echo
+          echo "===== STORAGE METADATA REFERENCES ====="
+          grep -R "ICalculator\|JLib.Tools" workspace/api || true
+
+          echo
+          echo "===== MESSAGING METADATA REFERENCES ====="
+          grep -R "ICalculator\|JLib.Tools" workspace/api || true
+
+      - name: Inspect xref map
+        run: |
+          echo "===== TOOLS XREFMAP ====="
+          curl -L "YOUR_XREFMAP_URL" -o tools-xrefmap.yml
+          head -100 tools-xrefmap.yml
+
+          echo
+          echo "===== SEARCH FOR ICALCULATOR ====="
+          grep -n "ICalculator" tools-xrefmap.yml || true
+
       - name: Build documentation site
         working-directory: workspace
         run: docfx build docfx.json -- xref https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.json
+
+      - name: Inspect generated links
+        run: |
+          echo "===== SEARCH GENERATED HTML FOR ICALCULATOR ====="
+          grep -R -i "ICalculator\|JLib.Tools" workspace/_site || true
 
       - name: Show generated site
         run: |
