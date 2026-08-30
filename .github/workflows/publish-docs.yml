@@ -241,15 +241,9 @@ jobs:
         run: |
           echo "XREF_ARGS = $XREF_ARGS"
 
-
       - name: Build documentation site
         working-directory: workspace
         run: docfx build docfx.json $XREF_ARGS
-
-      - name: Inspect generated links
-        run: |
-          echo "===== SEARCH GENERATED HTML FOR ICALCULATOR ====="
-          grep -R -i "ICalculator\|JLib.Tools" workspace/_site || true
 
       - name: Show generated site
         run: |
