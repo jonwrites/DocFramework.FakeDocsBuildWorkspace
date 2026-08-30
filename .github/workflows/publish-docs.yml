@@ -31,10 +31,14 @@ jobs:
         run: |
           sudo snap install yq
 
+      - name: Install YAML parser
+        run: pip install pyyaml
+
       - name: Create workspace
         run: |
           mkdir -p workspace/artifacts
           mkdir -p workspace/docs
+          mkdir -p workspace/contributors
 
       - name: Copy DocFX configuration
         run: cp docfx.json workspace/docfx.json
@@ -99,6 +103,11 @@ jobs:
             cp -r contributor/docs/* \
                "workspace/docs/$docs_path/"
 
+            echo "Copying contributor metadata..."
+
+            cp -r contributor/manifest.yml \
+               "workspace/contributors/$docs_path/"
+
             echo "Finished $name"
 
           done <<< "$contributors"
@@ -153,7 +162,7 @@ jobs:
 
           echo
           echo "===== MANIFESTS ====="
-          find workspace -name "manifest.yml" -print -exec cat {} \;
+          find workspace/*/ -name "manifest.yml" -print -exec cat {} \;
 
           echo
           echo "===== DOCFX CONFIG ====="
