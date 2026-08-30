@@ -228,7 +228,10 @@ jobs:
           for xref in sorted(xrefs):
               print(xref)
 
-          xref_args = " ".join(f'--xref "{xref}"' for xref in sorted(xrefs))
+          if xrefs:
+            xref_args = " ".join(f'--xref "{xref}"' for xref in sorted(xrefs))
+          else:
+            xref_args = ""
 
           with open(os.environ["GITHUB_ENV"], "a") as env:
               env.write(f"XREF_ARGS={xref_args}\n")
@@ -241,7 +244,7 @@ jobs:
 
       - name: Build documentation site
         working-directory: workspace
-        run: docfx build docfx.json --xref https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.yml
+        run: docfx build docfx.json $XREF_ARGS
 
       - name: Inspect generated links
         run: |
