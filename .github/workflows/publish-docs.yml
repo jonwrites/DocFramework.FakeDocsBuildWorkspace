@@ -191,15 +191,53 @@ jobs:
           echo "===== MESSAGING METADATA REFERENCES ====="
           grep -R "ICalculator\|JLib.Tools" workspace/api || true
 
-      - name: Inspect xref map
+      - name: Resolve dependency xrefmaps
         run: |
-          echo "===== TOOLS XREFMAP ====="
-          curl -L "https://docdemofakelibrary1.z26.web.core.windows.net/v1.2.0/xrefmap.json" -o tools-xrefmap.yml
-          head -100 tools-xrefmap.yml
+          python - <<'PY'
+          import os
+          import yaml
 
-          echo
-          echo "===== SEARCH FOR ICALCULATOR ====="
-          grep -n "ICalculator" tools-xrefmap.yml || true
+          xrefs = set()
+
+          contributors_dir = "workspace/contributors"
+
+          for contributor in os.listdir(contributors_dir):
+              contributor_path = os.path.join(contributors_dir, contributor)
+
+              if not os.path.isdir(contributor_path):
+                  continue
+
+              manifest_path = os.path.join(contributor_path, "manifest.yml")
+
+              if not os.path.exists(manifest_path):
+                  continue
+
+              print(f"Reading manifest: {manifest_path}")
+
+              with open(manifest_path) as f:
+                  manifest = yaml.safe_load(f) or {}
+
+              for dependency in manifest.get("dependencies", []):
+                  xref = dependency.get("xref")
+
+                  if xref:
+                      xrefs.add(xref)
+
+          print("===== RESOLVED XREFMAPS =====")
+
+          for xref in sorted(xrefs):
+              print(xref)
+
+          xref_args = " ".join(f'--xref "{xref}"' for xref in sorted(xrefs))
+
+          with open(os.environ["GITHUB_ENV"], "a") as env:
+              env.write(f"XREF_ARGS={xref_args}\n")
+          PY
+
+      - name: Inspect xref map list
+        run: |
+          echo "XREF_ARGS = $XREF_ARGS"
+
 
       - name: Build documentation site
         working-directory: workspace
