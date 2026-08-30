@@ -58,6 +58,7 @@ jobs:
             echo "=========================================="
 
             mkdir -p "workspace/docs/$docs_path"
+            mkdir workspace/contributors/$docs_path/
 
             echo "Finding documentation artifact..."
 
